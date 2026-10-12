@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Medication Schedule, Generic Names and Purpose</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; margin: 0; padding: 24px; color: #253244; background: #f3f6fa; line-height: 1.5; }
+  main { max-width: 1250px; margin: auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 3px 14px #19324a14; }
+  h1 { text-align: center; color: #174a70; margin: 0 0 8px; }
+  .intro { text-align: center; color: #566779; margin: 0 0 20px; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { border: 1px solid #d5dee8; padding: 10px; text-align: left; vertical-align: top; }
+  th { background: #174a70; color: white; }
+  tbody tr:nth-child(even) { background: #f2f6fa; }
+  .warning { border-left: 5px solid #c78316; background: #fff7e8; padding: 14px 16px; margin-top: 20px; border-radius: 5px; }
+  .unknown { color: #8a4b08; font-weight: bold; }
+  .small { font-size: 13px; color: #5c6875; margin-top: 18px; }
+  .print { display: block; margin: 18px auto 0; padding: 10px 18px; border: 0; border-radius: 6px; background: #174a70; color: white; cursor: pointer; font-size: 15px; }
+  @media (max-width: 750px) { body { padding: 10px; } main { padding: 12px; } table { font-size: 13px; } th, td { padding: 8px; min-width: 125px; } }
+  @media print { body { background: white; padding: 0; } main { box-shadow: none; padding: 0; } .print { display: none; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Medication Schedule, Generic Names and Purpose</h1>
+  <p class="intro">This is the medication schedule for Mangal Prasad Pradhan (updated 10/12/2026).</p>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>No.</th><th>Brand / medicine name</th><th>Generic name supplied</th><th>Strength / dose as written</th><th>Timing as written</th><th>General purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td><td>Ecosprin</td><td>Aspirin gastro-resistant tablets</td><td>75 mg</td><td>After morning meal</td>
+        <td>Antiplatelet medicine: reduces platelet clumping and may help prevent certain heart attacks and strokes when prescribed for this purpose.</td>
+      </tr>
+      <tr>
+        <td>2</td><td>Rexter</td><td>Torsemide tablets</td><td>20 mg</td><td>8:00 AM and 4:00 PM</td>
+        <td>Diuretic (“water tablet”): helps the body remove excess salt and water; commonly used for fluid retention and sometimes high blood pressure.</td>
+      </tr>
+      <tr>
+        <td>3</td><td>Astat</td><td>Atorvastatin calcium</td><td>10 mg</td><td>After evening meal</td>
+        <td>Statin: lowers LDL (“bad”) cholesterol and helps reduce cardiovascular risk.</td>
+      </tr>
+      <tr>
+        <td>4</td><td>Myocil</td><td>Cilnidipine tablets</td><td>10 mg</td><td>After morning lunch</td>
+        <td>Calcium-channel blocker: lowers blood pressure.</td>
+      </tr>
+      <tr>
+        <td>5</td><td>Prazopress XL</td><td>Prazosin hydrochloride (as written)</td><td>5 mg</td><td>After evening meal</td>
+        <td>Alpha-blocker: may be prescribed for high blood pressure or certain urinary symptoms. Confirm the exact XL formulation and generic name on the pack.</td>
+      </tr>
+      <tr>
+        <td>6</td><td>Lonid</td><td>Clonidine hydrochloride</td><td>100 mcg TDS </td><td>Three times daily (TDS)</td>
+        <td>Central alpha-agonist used to lower blood pressure. Do not abruptly stop clonidine without medical advice.</td>
+      </tr>
+      <tr>
+        <td>7</td><td>Dafodil</td><td>Dapagliflozin tablets</td><td>10 mg</td><td>After morning meal</td>
+        <td>SGLT2 inhibitor: helps lower blood glucose in type 2 diabetes and may also be prescribed for certain heart or kidney conditions.</td>
+      </tr>
+      <tr>
+        <td>8</td><td>QLin (Lina)</td><td>Linagliptin tablets</td><td>5 mg</td><td>After morning meal</td>
+        <td>DPP-4 inhibitor: helps control blood glucose in type 2 diabetes.</td>
+      </tr>
+      <tr>
+        <td>9</td><td>Stiloz</td><td>Cilostazol tablets</td><td>100 mg</td><td>Before Lunch and Dinner (30 mins)</td>
+        <td>Improves walking symptoms in peripheral arterial disease.</td>
+      </tr>
+      <tr>
+        <td>10</td><td>Peridin</td><td>Citrus bioflavonoids and hesperidin tablets</td><td>500 mg</td><td>Not specified</td>
+        <td>Bioflavonoid preparation sometimes used for venous/capillary circulation symptoms. </td>
+      </tr>
+      <tr>
+        <td>11</td><td>Humalog Mix (50:50) injection</td><td>Insulin lispro mix 50/50 — confirm exact product label</td><td>20U / 10U</td><td>Morning and Evening before meal</td>
+        <td>Premixed insulin used to control blood glucose in diabetes. </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <section class="warning">
+    <strong>Important safety checks</strong>
+    <ul>
+      <li><strong>Stiloz (cilostazol) and Ecosprin (aspirin):</strong> using medicines that affect platelets together may increase bleeding risk. The combination may be intentional, but confirm it with the prescriber and do not stop either medicine on your own.</li>
+      </ul>
+  </section>
+  <p class="small">26th Aswin 2083</p>
+  <button class="print" onclick="window.print()">Print medication schedule</button>  <button class="Back to Site"
+        onclick="window.location.href='https://bijayprad.github.io/mangal/family.html'">
+    Back to Family Page
+</button>
+</main>
+</body>
+</html>
