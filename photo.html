@@ -1,0 +1,436 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A collection of family photographs and memories.">
+<title>My Family Photo Album</title>
+
+<style>
+:root {
+    --bg: #f5f2ed;
+    --text: #302b26;
+    --accent: #765548;
+    --card: #ffffff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+}
+
+header {
+    text-align: center;
+    padding: 42px 16px 28px;
+    background: #e9ded3;
+}
+
+header h1 {
+    font-family: Georgia, serif;
+    font-size: clamp(30px, 5vw, 48px);
+    font-weight: normal;
+    margin: 0 0 12px;
+}
+
+header p {
+    margin: 0;
+    color: #62564e;
+    line-height: 1.6;
+}
+
+main {
+    max-width: 1500px;
+    margin: auto;
+    padding: 24px;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+input, select, button {
+    font: inherit;
+    border: 1px solid #d4c9bf;
+    border-radius: 8px;
+    padding: 11px 14px;
+}
+
+input, select {
+    background: white;
+    color: var(--text);
+}
+
+#search {
+    flex: 1;
+    min-width: 190px;
+}
+
+button {
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+}
+
+button:hover { opacity: 0.88; }
+
+#status {
+    color: #6b625b;
+    margin: 16px 0;
+    font-size: 14px;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.photo {
+    overflow: hidden;
+    background: var(--card);
+    border-radius: 9px;
+    box-shadow: 0 3px 12px #00000012;
+    cursor: pointer;
+    min-width: 0;
+}
+
+.photo img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    transition: transform .25s;
+    background: #e5e0da;
+}
+
+.photo:hover img { transform: scale(1.04); }
+
+.photo p {
+    font-size: 13px;
+    padding: 10px;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px 12px;
+    color: #71675f;
+}
+
+#more {
+    display: block;
+    margin: 28px auto;
+}
+
+footer {
+    text-align: center;
+    padding: 24px;
+    color: #71675f;
+    font-size: 13px;
+}
+
+/* Photo viewer */
+.viewer {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    inset: 0;
+    padding: 55px 65px 25px;
+    background: rgba(0,0,0,.94);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.viewer.open { display: flex; }
+
+.viewer img {
+    max-width: 100%;
+    max-height: 78vh;
+    object-fit: contain;
+}
+
+#caption {
+    color: white;
+    text-align: center;
+    margin: 14px 0;
+    overflow-wrap: anywhere;
+}
+
+.viewer button {
+    position: absolute;
+    border: 0;
+    border-radius: 50%;
+    background: #ffffff25;
+    color: white;
+    font-size: 24px;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+}
+
+#close { top: 14px; right: 18px; }
+#prev { left: 12px; top: 50%; }
+#next { right: 12px; top: 50%; }
+
+@media (max-width: 1100px) {
+    .gallery { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 750px) {
+    .gallery { grid-template-columns: repeat(3, 1fr); }
+    main { padding: 14px; }
+}
+
+@media (max-width: 480px) {
+    .gallery { grid-template-columns: repeat(2, 1fr); gap: 9px; }
+    .viewer { padding: 55px 45px 20px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Our Family Album</h1>
+    <p>A collection of beautiful moments, memories, and family stories.</p>
+</header>
+
+<main>
+    <div class="toolbar">
+        <input
+            id="search"
+            type="search"
+            placeholder="Search photos by filename..."
+            aria-label="Search photos">
+
+        <select id="sort" aria-label="Sort photos">
+            <option value="name">Sort by filename</option>
+            <option value="oldest">Oldest first</option>
+            <option value="newest">Newest first</option>
+        </select>
+
+        <button id="reload" type="button">Reload Photos</button>
+    </div>
+
+    <p id="status" role="status">Loading photographs...</p>
+    <section class="gallery" id="gallery" aria-label="Photo gallery"></section>
+
+    <button id="more" type="button" hidden>Load More Photos</button>
+</main>
+
+<div class="viewer" id="viewer" role="dialog"
+     aria-modal="true" aria-label="Photo viewer">
+    <button id="close" aria-label="Close photo viewer">&times;</button>
+    <button id="prev" aria-label="Previous photo">&#10094;</button>
+    <img id="largePhoto" alt="">
+    <p id="caption"></p>
+    <button id="next" aria-label="Next photo">&#10095;</button>
+</div>
+
+<footer>
+    Preserving our precious family memories.
+</footer>
+
+<script>
+/*
+  PUBLIC GITHUB PHOTO FOLDER
+  Change OWNER, REPOSITORY, and FOLDER if needed.
+  This version loads image files directly from that folder.
+*/
+const OWNER = "bijayprad";
+const REPOSITORY = "mangal";
+const FOLDER = "photo";
+
+const API =
+    `https://api.github.com/repos/${OWNER}/${REPOSITORY}/contents/${FOLDER}`;
+
+const gallery = document.getElementById("gallery");
+const status = document.getElementById("status");
+const moreButton = document.getElementById("more");
+const search = document.getElementById("search");
+const sort = document.getElementById("sort");
+const viewer = document.getElementById("viewer");
+const largePhoto = document.getElementById("largePhoto");
+const caption = document.getElementById("caption");
+
+let allPhotos = [];
+let visiblePhotos = [];
+let currentIndex = 0;
+let displayed = 0;
+const PAGE_SIZE = 40;
+
+function isImage(file) {
+    return /\.(jpe?g|png|gif|webp|avif|bmp)$/i.test(file.name);
+}
+
+async function loadPhotos() {
+    status.textContent = "Loading photographs from GitHub...";
+    gallery.replaceChildren();
+    moreButton.hidden = true;
+    displayed = 0;
+
+    try {
+        const response = await fetch(API);
+
+        if (!response.ok) {
+            throw new Error(
+                response.status === 403
+                ? "GitHub API rate limit reached. Please try again later."
+                : "Could not access the photo folder. Check the repository and folder."
+            );
+        }
+
+        const files = await response.json();
+
+        allPhotos = files
+            .filter(file => file.type === "file" && isImage(file))
+            .map(file => ({
+                name: file.name,
+                url: file.download_url
+            }))
+            .sort((a, b) =>
+                a.name.localeCompare(b.name, undefined, {
+                    numeric: true,
+                    sensitivity: "base"
+                })
+            );
+
+        renderPhotos();
+    } catch (error) {
+        status.textContent = error.message;
+        gallery.innerHTML =
+            '<div class="empty">Unable to load photos. ' +
+            'Make sure the GitHub repository is public and try again.</div>';
+    }
+}
+
+function renderPhotos() {
+    const query = search.value.trim().toLowerCase();
+
+    visiblePhotos = allPhotos.filter(photo =>
+        photo.name.toLowerCase().includes(query)
+    );
+
+    if (sort.value === "newest") visiblePhotos.reverse();
+    // "oldest" and "name" use filename order.
+
+    gallery.replaceChildren();
+    displayed = 0;
+
+    if (visiblePhotos.length === 0) {
+        status.textContent = "No matching photographs found.";
+        gallery.innerHTML =
+            '<div class="empty">No photos match your search.</div>';
+        moreButton.hidden = true;
+        return;
+    }
+
+    status.textContent =
+        `${visiblePhotos.length} photograph(s) found.`;
+
+    showNextPage();
+}
+
+function showNextPage() {
+    const end = Math.min(displayed + PAGE_SIZE, visiblePhotos.length);
+
+    for (let i = displayed; i < end; i++) {
+        const photo = visiblePhotos[i];
+
+        const card = document.createElement("article");
+        card.className = "photo";
+        card.tabIndex = 0;
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-label", "View " + photo.name);
+
+        const img = document.createElement("img");
+        img.src = photo.url;
+        img.alt = photo.name;
+        img.loading = "lazy";
+        img.decoding = "async";
+
+        const name = document.createElement("p");
+        name.textContent = photo.name;
+
+        card.append(img, name);
+        card.addEventListener("click", () => openViewer(i));
+        card.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openViewer(i);
+            }
+        });
+
+        gallery.appendChild(card);
+    }
+
+    displayed = end;
+    moreButton.hidden = displayed >= visiblePhotos.length;
+
+    status.textContent =
+        `Showing ${displayed} of ${visiblePhotos.length} photographs.`;
+}
+
+function openViewer(index) {
+    currentIndex = index;
+    updateViewer();
+    viewer.classList.add("open");
+    document.body.style.overflow = "hidden";
+    document.getElementById("close").focus();
+}
+
+function updateViewer() {
+    const photo = visiblePhotos[currentIndex];
+    if (!photo) return;
+
+    largePhoto.src = photo.url;
+    largePhoto.alt = photo.name;
+    caption.textContent =
+        `${photo.name} (${currentIndex + 1} of ${visiblePhotos.length})`;
+}
+
+function closeViewer() {
+    viewer.classList.remove("open");
+    document.body.style.overflow = "";
+}
+
+function movePhoto(step) {
+    currentIndex =
+        (currentIndex + step + visiblePhotos.length) %
+        visiblePhotos.length;
+    updateViewer();
+}
+
+document.getElementById("close").addEventListener("click", closeViewer);
+document.getElementById("prev").addEventListener("click", () => movePhoto(-1));
+document.getElementById("next").addEventListener("click", () => movePhoto(1));
+
+document.addEventListener("keydown", event => {
+    if (!viewer.classList.contains("open")) return;
+
+    if (event.key === "Escape") closeViewer();
+    if (event.key === "ArrowLeft") movePhoto(-1);
+    if (event.key === "ArrowRight") movePhoto(1);
+});
+
+moreButton.addEventListener("click", showNextPage);
+search.addEventListener("input", renderPhotos);
+sort.addEventListener("change", renderPhotos);
+document.getElementById("reload").addEventListener("click", loadPhotos);
+
+loadPhotos();
+</script>
+
+</body>
+</html>
